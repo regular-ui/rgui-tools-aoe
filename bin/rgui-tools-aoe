@@ -5,8 +5,8 @@
 let pkg = require('../package.json');
 let chalk = require('chalk');
 let aoe = require('../src/aoe.js');
-let commander = require('commander');
-commander
+let program = require('commander');
+program
     .version(pkg.version)
     // .option('-C, --no-cddir', 'No cddir')
     .option('-d, --debug', 'debug')
@@ -16,23 +16,22 @@ commander
 
 let options = {
     cddir: true,
-    debug: commander.debug,
+    debug: program.debug,
     verbose: true,
-    async: commander.async
+    async: program.async
 };
 
 let execFunc = options.async ? 'exec' : 'execSync';
 const FAST_COMMANDS = ['doc', 'gh-pages', 'test', 'publish'];
 
-let command = commander.args[0];
+let command = program.args[0];
 if(!command)
-    commander.help();
+    program.help();
 else if(command === 'list')
     aoe[execFunc]('echo {repo}', Object.assign(options, {verbose: false}));
 else if(command === 'open-doc')
     aoe[execFunc]('open doc/{main}/index.html', options);
 else if(~FAST_COMMANDS.indexOf(command))
     aoe[execFunc]('rgui-tools ' + command, options);
-else {
-    aoe[execFunc](commander.args[commander.args.length - 1], options);
-}
+else
+    aoe[execFunc](program.args[program.args.length - 1], options);
